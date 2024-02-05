@@ -19,7 +19,7 @@ POOP_HELP = f"""
 
 
 def handle_poop_request(args, db_conn):
-    if args is None:
+    if (args is None) or args[0] == "help":
         resp = slack.response(POOP_HELP, response_type="ephemeral")
     elif args[0] in {"d", "del", "delete"}:
         resp = handle_delete_poop(args, db_conn)
@@ -28,7 +28,7 @@ def handle_poop_request(args, db_conn):
     elif is_timestamp(args[0]):
         resp = handle_poop_create(args, db_conn)
     else:
-        raise ValueError("Not valid args: {args}")
+        raise ValueError(f"Not valid args: {args}")
     return resp
 
 

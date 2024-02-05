@@ -21,7 +21,7 @@ FEED_HELP = """
 
 
 def handle_feed_request(args, db_conn):
-    if args is None:
+    if (args is None) or args[0] == "help":
         resp = slack.response(FEED_HELP, response_type="ephemeral")
     elif args[0] in {"s", "start"}:
         resp = handle_feed_start(args, db_conn)
@@ -38,7 +38,7 @@ def handle_feed_request(args, db_conn):
     elif is_timestamp(args[0]):
         resp = handle_feed_create(args, db_conn)
     else:
-        raise ValueError("Not valid args: {args}")
+        raise ValueError(f"Not valid args: {args}")
     return resp
 
 def handle_delete_feed(args, db_conn):

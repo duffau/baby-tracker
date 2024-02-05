@@ -28,7 +28,7 @@ def validate_sleep_duration(duration):
 
 
 def handle_sleep_request(args, db_conn):
-    if args is None:
+    if (args is None) or args[0] == "help":
         resp = slack.response(SLEEP_HELP, response_type="ephemeral")
     elif args[0] in {"s", "start"}:
         resp = handle_sleep_start(args, db_conn)
@@ -45,7 +45,7 @@ def handle_sleep_request(args, db_conn):
     elif is_timestamp(args[0]):
         resp = handle_sleep_create(args, db_conn)
     else:
-        raise ValueError("Not valid args: {args}")
+        raise ValueError(f"Not valid args: {args}")
     return resp
 
 
