@@ -1,6 +1,7 @@
 import datetime
 import io
 import pandas as pd
+import matplotlib
 from matplotlib import pyplot as plt
 from datetime import timedelta, date
 import matplotlib.dates as mdates
@@ -15,6 +16,8 @@ import baby_tracker.utils as ut
 TIMESTAMP_COLUMNS = ["from_time", "to_time", "created_at", "updated_at", "timestamp"]
 START_OF_DAY = datetime.time.fromisoformat("06:00")
 
+matplotlib.use('Agg')
+
 def total_duration_per_day(db_conn, table, offset="6Hours"):
     df = df_from_db_table(db_conn, table)
     agg = df.resample('D', on='from_time', offset=offset)[["duration"]].sum()
@@ -23,7 +26,7 @@ def total_duration_per_day(db_conn, table, offset="6Hours"):
 def latest_daily_total_duration(db_conn, table):
     df_agg_tot = total_duration_per_day(db_conn, table)
     last_date = df_agg_tot.index[-1]
-    last_duration = timedelta(seconds=int(df_agg_tot.duration[-1]))
+    last_duration = timedelta(seconds=int(df_agg_tot.duration.iloc[-1]))
     return last_date, last_duration
 
 def avg_duration_per_day(db_conn, table, offset="6Hours"):
