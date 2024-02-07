@@ -5,7 +5,7 @@ from baby_tracker import slack
 from baby_tracker import analyze as an
 from baby_tracker.utils import format_timestamp, is_timestamp
 
-from .config import SLACK_OAUTH_TOKEN, CHANNEL_ID, DEFAULT_N_LIST
+from baby_tracker import DEFAULT_N_LIST
 
 POOP_HELP = f"""
 *Examples*:

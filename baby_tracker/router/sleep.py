@@ -7,7 +7,7 @@ from baby_tracker import analyze as an
 from baby_tracker.utils import format_timestamp, format_duration, is_timestamp
 from baby_tracker.router._duration import create_duration_record, make_duration_status_text, format_duration_row, format_timestamp, _validate_duration, analyze_timeline
 
-from .config import DEFAULT_N_LIST, SLACK_OAUTH_TOKEN, CHANNEL_ID
+from baby_tracker import DEFAULT_N_LIST, SLACK_OAUTH_TOKEN, CHANNEL_ID
 
 SLEEP_HELP = """
 *Examples*:

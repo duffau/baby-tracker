@@ -5,7 +5,7 @@ from baby_tracker import slack
 from baby_tracker import analyze as an
 from baby_tracker.utils import is_timestamp, format_timestamp
 
-from .config import SLACK_OAUTH_TOKEN, CHANNEL_ID, DEFAULT_N_LIST
+from baby_tracker import SLACK_OAUTH_TOKEN, CHANNEL_ID, DEFAULT_N_LIST
 
 WEIGHT_HELP = """
 *Examples*:

@@ -7,7 +7,7 @@ from baby_tracker import db
 from baby_tracker import analyze as an
 from baby_tracker.utils import format_duration, format_timestamp, timedelta_to_seconds 
 
-from .config import SLACK_OAUTH_TOKEN, CHANNEL_ID
+from baby_tracker import SLACK_OAUTH_TOKEN, CHANNEL_ID
 
 
 def _validate_duration(duration):
