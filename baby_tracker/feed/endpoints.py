@@ -6,7 +6,8 @@ from baby_tracker import analyze as an
 from baby_tracker.utils import format_timestamp, is_timestamp
 from baby_tracker.router._duration import create_duration_record, make_duration_status_text, format_merged_duration_row, format_timestamp, _validate_duration, analyze_timeline
 
-from .config import DEFAULT_N_LIST, SLACK_OAUTH_TOKEN, CHANNEL_ID
+from baby_tracker import DEFAULT_N_LIST, SLACK_OAUTH_TOKEN, CHANNEL_ID
+
 
 
 FEED_HELP = """
@@ -17,7 +18,6 @@ FEED_HELP = """
 `/f d 71` _Delete breastfeeding record with id=71_
 `/f analyze` Returns plots and stats of breastfeeding bahaviour.
 """
-
 
 
 def handle_feed_request(args, db_conn):
@@ -40,6 +40,7 @@ def handle_feed_request(args, db_conn):
     else:
         raise ValueError(f"Not valid args: {args}")
     return resp
+
 
 def handle_delete_feed(args, db_conn):
     feed_id = args[1]

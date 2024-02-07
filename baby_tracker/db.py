@@ -5,6 +5,7 @@ import logging
 from datetime import datetime, timedelta
 import baby_tracker.utils as ut  
 
+
 logger = logging.getLogger(__name__)
 
 ISO_FORMAT = "%Y-%m-%d %H:%M:%S.%f"

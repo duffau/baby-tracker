@@ -39,7 +39,7 @@ def test_handle_end_sleep_produce_error_with_no_active_sleep_stretch(db_conn):
 
 
 def test_handle_end_sleep_produces_valid_response_with_active_sleep_stretch(db_conn):
-    from_time = sleep.to_iso(datetime.now()) 
+    from_time = db.to_iso(datetime.now()) 
     sleep.create_sleep_record([from_time], db_conn)
     resp = sleep.handle_sleep_request(["end"], db_conn)
     assert "error" not in resp["text"]

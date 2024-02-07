@@ -4,10 +4,12 @@ from flask import Flask, request, jsonify, g
 
 from baby_tracker import db
 from baby_tracker import slack
-from baby_tracker.router.feed import handle_feed_request
+from baby_tracker.feed.endpoints import handle_feed_request
 from baby_tracker.router.sleep import handle_sleep_request
 from baby_tracker.router.weight import handle_weight_request
 from baby_tracker.router.poop import handle_poop_request
+
+from baby_tracker import DB_FILE
 
 
 HELP = """
@@ -18,7 +20,6 @@ This is the baby tracker.
 /sl Register *sleep*. Call command without arguments for help.
 """
 
-DB_FILE = os.getenv("DB_FILE")
 
 def parse_args(args_text):
     if args_text:
