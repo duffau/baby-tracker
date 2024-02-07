@@ -1,10 +1,10 @@
 import dateparser as dp
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from baby_tracker import db
 from baby_tracker import slack
 from baby_tracker import analyze as an
-from baby_tracker.utils import format_timestamp, format_duration, is_timestamp, timedelta_to_seconds
+from baby_tracker.utils import format_timestamp, format_duration, is_timestamp
 from baby_tracker.router._duration import create_duration_record, make_duration_status_text, format_duration_row, format_timestamp, _validate_duration, analyze_timeline
 
 from .config import DEFAULT_N_LIST, SLACK_OAUTH_TOKEN, CHANNEL_ID
@@ -12,6 +12,8 @@ from .config import DEFAULT_N_LIST, SLACK_OAUTH_TOKEN, CHANNEL_ID
 SLEEP_HELP = """
 *Examples*:
 `/sl`  _This help text_
+`/sl start` _Start a sleep stretch now_
+`/sl end` _End latest sleep stretch_
 `/sl 12:30 16:45` _Register sleep between two time points_
 `/sl ls 5` _List 5 latest sleep entries_
 `/sl d 71` _Delete sleep record with id=71_
@@ -20,6 +22,10 @@ SLEEP_HELP = """
 """
 
 MAX_VALID_SLEEP_SEC = timedelta(hours=10)
+
+class NoActiveSleepRecordError(ValueError):
+    """Exception raised when an operation requires an active sleep record but none is found."""
+    pass
 
 def validate_sleep_duration(duration):
     _validate_duration(duration)
@@ -58,7 +64,12 @@ def handle_sleep_create(args, db_conn):
 
 
 def handle_sleep_start(args, db_conn):
-    sleep_id, _ = create_sleep_record(args[1:], db_conn)
+    try:
+        from_time = dp.parse(args[1])
+    except IndexError:
+        from_time = datetime.now()
+
+    sleep_id, _ = create_sleep_record([from_time], db_conn)
     id, from_time, *ignore = db.get_sleep_record_by_id(db_conn, sleep_id)
     mrk_down_message = f"Sleep record created with Id: *{sleep_id}*. Started at {format_timestamp(from_time, short=True)} :sleeping:"
     resp = slack.response(mrk_down_message)
@@ -66,8 +77,16 @@ def handle_sleep_start(args, db_conn):
 
 
 def handle_sleep_end(args, db_conn):
-    sleep_id, from_time, to_time, *ignore = db.get_latest_sleep_record_with_null_to_time(db_conn)
-    to_time = dp.parse(args[1])
+    try:
+        sleep_id, from_time, to_time, *ignore = db.get_latest_sleep_record_with_null_to_time(db_conn)
+    except db.NoActiveDurationRecordError:
+        raise NoActiveSleepRecordError
+
+    try:
+        to_time = dp.parse(args[1])
+    except IndexError:
+        to_time = datetime.now()
+
     duration = to_time - from_time
     validate_sleep_duration(duration)    
     updated_sleep_record = (from_time, to_time, duration)
