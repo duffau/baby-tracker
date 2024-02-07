@@ -1,12 +1,9 @@
 from datetime import datetime, timedelta
 import dateparser as dp
 
+
 def timedelta_to_seconds(timedelta):
     return timedelta.total_seconds()
-
-
-def to_iso(timestamp: datetime):
-    return timestamp.strftime(ISO_FORMAT)
 
 
 def format_timestamp(timestamp: datetime, short=False, date_only=False):
