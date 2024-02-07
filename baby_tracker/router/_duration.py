@@ -1,4 +1,6 @@
+from typing import Union
 import dateparser as dp
+from datetime import datetime
 
 from baby_tracker import slack
 from baby_tracker import db
@@ -12,7 +14,7 @@ def _validate_duration(duration):
     if duration is not None:
         assert (
             timedelta_to_seconds(duration) > 0
-        ), "Duration must be positive. Got from_time '{from_time}' and to_time: '{to_time}' which gives a duration of '{duration}' seconds."
+        ), f"Duration must be positive. Got a duration of '{duration}' seconds."
 
 
 def create_duration_record(args, create_db_record, db_conn, validate_duration=_validate_duration):
@@ -36,13 +38,17 @@ def make_duration_status_text(db_conn, table, latest_id=None):
 
 
 def parse_duration_args(args):
-    from_time = dp.parse(args[0])
+    from_time = parse_timestamp(args[0])
     try:
-        to_time = args[1]
-        to_time = dp.parse(to_time)
+        to_time = parse_timestamp(args[1])
     except IndexError:
         to_time = None
     return from_time, to_time
+
+def parse_timestamp(ts: Union[str, datetime]) -> datetime:
+    if not isinstance(ts, datetime):
+        ts = dp.parse(ts)
+    return ts
 
 
 def format_duration_row(row: tuple):
