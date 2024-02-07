@@ -1,4 +1,5 @@
 import sqlite3
+import tempfile
 from sqlite3 import Error
 import logging
 from datetime import datetime, timedelta
@@ -9,15 +10,39 @@ logger = logging.getLogger(__name__)
 ISO_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 
 
-def create_connection(db_file=":memory:"):
-    """ create a database connection to a SQLite database """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        logger.info(sqlite3.version)
-    except Error as e:
-        logger.error(e)
-    return conn
+class NoActiveDurationRecordError(ValueError):
+    """Exception raised when an operation requires an active record but none is found."""
+    pass
+
+def connection_factory():
+    # This variable will be captured (closed over) by the create_connection function
+    temp_db_file = None
+
+    def create_connection(db_file=":memory:"):
+        """Create a database connection to a SQLite database.
+        
+        If db_file is an empty string, a temporary file is used for the database,
+        and it's created only once across multiple calls.
+        """
+        nonlocal temp_db_file  # Reference the captured variable
+        conn = None
+        try:
+            if db_file == "":
+                if temp_db_file is None:
+                    temp_file = tempfile.NamedTemporaryFile(delete=False)
+                    temp_db_file = temp_file.name
+                    temp_file.close()  # Close the file so SQLite can use it
+                    logger.info(f"Creating temporary db_file: {temp_db_file}")
+                db_file = temp_db_file
+            conn = sqlite3.connect(db_file)
+            logger.info(f"Connected to SQLite file: {db_file}")
+        except sqlite3.Error as e:
+            logger.error(e)
+        return conn
+
+    return create_connection
+
+create_connection = connection_factory()
 
 
 def create_table(conn, create_table_sql):
@@ -198,11 +223,19 @@ def _get_duration_record_by_id(conn, table, id):
         return None
 
 def get_latest_feed_record_with_null_to_time(conn):
-    return _get_latest_duration_record_with_null_to_time(conn, "feed")
+    record = _get_latest_duration_record_with_null_to_time(conn, "feed")
+    if record:
+        return record
+    else:
+        raise NoActiveDurationRecordError    
 
 
 def get_latest_sleep_record_with_null_to_time(conn):
-    return _get_latest_duration_record_with_null_to_time(conn, "sleep")
+    record = _get_latest_duration_record_with_null_to_time(conn, "sleep")
+    if record:
+        return record
+    else:
+        raise NoActiveDurationRecordError    
 
 
 def _get_latest_duration_record_with_null_to_time(conn, table):
