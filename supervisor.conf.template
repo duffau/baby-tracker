@@ -1,7 +1,7 @@
 [program:baby_tracker]
 directory=/srv/baby-tracker
 command=/srv/baby-tracker/main.sh
-environment=DB_FILE="./db.sqlite",SLACK_OAUTH_TOKEN="Bot User OAuth Token",CHANNEL_ID="Slack Channel ID for Bot reponses"
+environment=DB_FILE="./db.sqlite",SLACK_OAUTH_TOKEN="xoxb-639847421978-2864587479400-lzTFILb1Tc25GESheaDRchNh",CHANNEL_ID="L74VDHCUNYH"
 stderr_logfile=/var/log/baby_tracker.err.log
 stdout_logfile=/var/log/baby_tracker.out.log
 stopsignal=INT
