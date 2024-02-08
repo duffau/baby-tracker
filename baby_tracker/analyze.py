@@ -15,6 +15,7 @@ import baby_tracker.utils as ut
 
 TIMESTAMP_COLUMNS = ["from_time", "to_time", "created_at", "updated_at", "timestamp"]
 START_OF_DAY = datetime.time.fromisoformat("06:00")
+BIRTH_DATE = datetime.date(2024, 1, 24)
 
 matplotlib.use('Agg')
 
@@ -112,20 +113,20 @@ def daily_duration_pattern_plot(df: DataFrame, title=None, from_var="from_time",
     pass
 
 
-def weight_growth_df(db_conn, birth_date=datetime.date(2021, 5, 18)):
+def weight_growth_df(db_conn, birth_date=BIRTH_DATE):
     df = df_from_db_table(db_conn, "weight")
     df["age"] = (df.timestamp - pd.to_datetime(birth_date)).dt.days
     return df
 
 
-def growth_curves_plot(df,  title=None, growth_variable="weight", sex="girl", baby_name="Carla"):
+def growth_curves_plot(df,  title=None, growth_variable="weight", sex="boy", baby_name="Oscar"):
     basename = {"weight": "weianthro"}.get(growth_variable)
     x_var = "age"
     ylabel = {"weight": "weight (g)"}.get(growth_variable)
     xlabel = {"weight": "age (days)"}.get(growth_variable)
 
 
-    growth_curnves = pd.read_csv(f"./data/growth-curves/{basename}_{sex}.csv")
+    growth_curnves = pd.read_csv(f"./baby_tracker/growth-curves/{basename}_{sex}.csv")
     x_max = int(max(df[x_var])*1.25)
     growth_curnves = growth_curnves[growth_curnves[x_var] < x_max].copy()
 
