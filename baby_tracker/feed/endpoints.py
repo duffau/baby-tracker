@@ -3,8 +3,9 @@ import dateparser as dp
 from baby_tracker import db
 from baby_tracker import slack
 from baby_tracker import analyze as an
+from baby_tracker.feed.repository import create_feed_record
 from baby_tracker.utils import format_timestamp, is_timestamp
-from baby_tracker.router._duration import create_duration_record, make_duration_status_text, format_merged_duration_row, format_timestamp, _validate_duration, analyze_timeline
+from baby_tracker.router._duration import make_duration_status_text, format_merged_duration_row, format_timestamp, _validate_duration, analyze_timeline
 
 from baby_tracker import DEFAULT_N_LIST, SLACK_OAUTH_TOKEN, CHANNEL_ID
 
@@ -148,5 +149,3 @@ def handle_feed_status(args, db_conn):
     return slack.response(mrk_down_message, response_type="in_channel")
 
 
-def create_feed_record(args, db_conn):
-    return create_duration_record(args, db.create_feed, db_conn)

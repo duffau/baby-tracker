@@ -99,10 +99,6 @@ def init_db(db_file: str):
     return conn
 
 
-def create_feed(conn, feed):
-    return _create_duration_record(conn, feed, "feed")
-
-
 def create_sleep(conn, sleep):
     return _create_duration_record(conn, sleep, "sleep")
 

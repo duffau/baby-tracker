@@ -2,6 +2,7 @@ import pytest
 from datetime import datetime, timedelta
 
 from baby_tracker import db
+import baby_tracker.feed.repository
 
 
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
@@ -51,7 +52,7 @@ def test_init_db(db_conn):
 
 def test_create_feed(db_conn):
     feed_record = make_feed_record()
-    feed_id = db.create_feed(db_conn, feed_record)
+    feed_id = baby_tracker.feed.repository.create_feed(db_conn, feed_record)
     cursor = db_conn.cursor()
     cursor.execute("SELECT * FROM feed where id = ?;", (feed_id,))
     rows = cursor.fetchall()
@@ -60,7 +61,7 @@ def test_create_feed(db_conn):
 
 def test_get_feed_record(db_conn):
     from_time, to_time, duration = make_feed_record()
-    feed_id = db.create_feed(db_conn, (from_time, to_time, duration))
+    feed_id = baby_tracker.feed.repository.create_feed(db_conn, (from_time, to_time, duration))
     feed_record = db.get_feed_record_by_id(db_conn, feed_id)
     _id, _from_time, _to_time, _duration, _created_at, _updated_at = feed_record
     assert _id == feed_id

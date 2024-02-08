@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, g
 from baby_tracker import db
 from baby_tracker import slack
 from baby_tracker.feed.endpoints import handle_feed_request
-from baby_tracker.router.sleep import handle_sleep_request
+from baby_tracker.sleep.endpoints import handle_sleep_request
 from baby_tracker.router.weight import handle_weight_request
 from baby_tracker.router.poop import handle_poop_request
 
