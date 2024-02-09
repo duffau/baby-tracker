@@ -142,24 +142,26 @@ def growth_curves_plot(df,  title=None, growth_variable="weight", sex="boy", bab
     growth_curnves = pd.read_csv(f"./baby_tracker/growth-curves/{basename}_{sex}.csv")
     x_max = int(max(df[x_var])*1.25)
     growth_curnves = growth_curnves[growth_curnves[x_var] < x_max].copy()
-
     fig, ax = plt.subplots()
-    ax = growth_curnves.plot(
-        x=x_var,
-        y=["p5", "p25", "p50", "p75", "p95"],
-        style=["--", "--", "-", "--", "--"],
-        lw=1,
-        color="black",
-        title=f"WHO {growth_variable} curves: {sex}",
-        ax = ax
-    )
-    labelLines(fig.gca().get_lines(), zorder=2.5)
-    ax = df.plot(x=x_var, y=growth_variable, label=baby_name, ax=ax, style="-o")
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.get_legend().remove()
-    ax.set_axisbelow(True)
-    ax.grid(axis="y")
+    if growth_curnves.empty:
+        ax = empty_plot(ax, "No growth curve data found")
+    else:
+        ax = growth_curnves.plot(
+            x=x_var,
+            y=["p5", "p25", "p50", "p75", "p95"],
+            style=["--", "--", "-", "--", "--"],
+            lw=1,
+            color="black",
+            title=f"WHO {growth_variable} curves: {sex}",
+            ax = ax
+        )
+        labelLines(fig.gca().get_lines(), zorder=2.5)
+        ax = df.plot(x=x_var, y=growth_variable, label=baby_name, ax=ax, style="-o")
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.get_legend().remove()
+        ax.set_axisbelow(True)
+        ax.grid(axis="y")
     fig.tight_layout()
     return plot_to_buffer(fig)
 
@@ -172,3 +174,10 @@ def plot_to_buffer(fig):
     plt.close()
     buf.seek(0)
     return buf
+
+def empty_plot(ax, text="No data found", color="red"):
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis('off')
+    ax.text(0.5, 0.5, text, horizontalalignment='center', verticalalignment='center', fontsize=20, color=color)
+    return ax
