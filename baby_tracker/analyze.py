@@ -41,11 +41,18 @@ def count_per_day(db_conn, table, offset="6Hours"):
     return agg
 
 
-def df_from_db_table(db_conn, table, cutoff_timestamp:datetime=None):
-    if cutoff_timestamp is None:
-        return pd.read_sql_query(f"SELECT * FROM {table};", db_conn, parse_dates=TIMESTAMP_COLUMNS, index_col="id")
+def df_from_db_table(db_conn, table, cutoff_timestamp:datetime=None, limit:int=None):
+    if limit is not None:
+        limit = int(limit)
+        limit_sql = f"LIMIT {limit}"
     else:
-        return pd.read_sql_query(f"SELECT * FROM {table} WHERE datetime(created_at) > datetime('{to_iso(cutoff_timestamp)}');", db_conn, parse_dates=TIMESTAMP_COLUMNS, index_col="id")
+        limit_sql = ""
+
+    if cutoff_timestamp is None:
+        return pd.read_sql_query(f"SELECT * FROM {table} {limit_sql};", db_conn, parse_dates=TIMESTAMP_COLUMNS, index_col="id")
+    else:
+        return pd.read_sql_query(f"SELECT * FROM {table} WHERE datetime(created_at) > datetime('{to_iso(cutoff_timestamp)}') {limit_sql};", db_conn, parse_dates=TIMESTAMP_COLUMNS, index_col="id")
+
 
 
 def merge_duration_tables(db_conn, tables, n_days=3):
