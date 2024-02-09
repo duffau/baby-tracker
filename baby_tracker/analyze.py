@@ -41,6 +41,12 @@ def count_per_day(db_conn, table, offset="6Hours"):
     return agg
 
 
+def latest_n_intervals(db_conn, table, n=3):
+    df = df_from_db_table(db_conn, table, limit=n+1)
+    df["time_interval"] = df["from_time"].diff()
+    return df
+
+
 def df_from_db_table(db_conn, table, cutoff_timestamp:datetime=None, limit:int=None):
     if limit is not None:
         limit = int(limit)
