@@ -28,13 +28,15 @@ def connection_factory():
         nonlocal temp_db_file  # Reference the captured variable
         conn = None
         try:
-            if db_file == "":
-                if temp_db_file is None:
-                    temp_file = tempfile.NamedTemporaryFile(delete=False)
-                    temp_db_file = temp_file.name
-                    temp_file.close()  # Close the file so SQLite can use it
-                    logger.info(f"Creating temporary db_file: {temp_db_file}")
+            if db_file == "" and temp_db_file is None:
+                temp_file = tempfile.NamedTemporaryFile(delete=False)
+                temp_db_file = temp_file.name
+                temp_file.close()  # Close the file so SQLite can use it
+                logger.info(f"Creating temporary db_file: {temp_db_file}")
+
+            if temp_db_file is not None:
                 db_file = temp_db_file
+
             conn = sqlite3.connect(db_file)
             logger.info(f"Connected to SQLite file: {db_file}")
         except sqlite3.Error as e:
